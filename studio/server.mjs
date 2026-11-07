@@ -121,7 +121,7 @@ async function handleChat(req, res) {
     ? body.model.trim()
     : config.model;
   const controller = new AbortController();
-  req.on("close", () => {
+  res.on("close", () => {
     if (!res.writableEnded) controller.abort();
   });
 
@@ -249,10 +249,17 @@ const server = createServer(async (req, res) => {
     return json(res, 405, { error: "Method not allowed." });
   }
 
-  const requested = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
-  const safePath = normalize(requested).replace(/^([.][.][/\\])+/, "");
-  const filePath = join(PUBLIC, safePath);
-  if (!filePath.startsWith(PUBLIC)) return json(res, 403, { error: "Forbidden." });
+  let requested;
+  try {
+    requested = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+  } catch {
+    return json(res, 400, { error: "Invalid path encoding." });
+  }
+  const filePath = resolve(PUBLIC, `.${requested}`);
+  const pathFromPublic = relative(PUBLIC, filePath);
+  if (pathFromPublic.startsWith("..") || isAbsolute(pathFromPublic)) {
+    return json(res, 403, { error: "Forbidden." });
+  }
 
   try {
     const data = await readFile(filePath);
