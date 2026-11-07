@@ -1,0 +1,13 @@
+{
+  "name": "rea-ai-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Optional local AI chat dashboard for REA. Kept separate from the REA CLI and MCP runtime.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}
