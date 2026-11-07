@@ -8,6 +8,6 @@
     "node": ">=22.23.4"
   },
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node --env-file-if-exists=.env server.mjs"
   }
 }
